@@ -1,7 +1,14 @@
 # Rule
+- R1: Ưu tiên input người dùng (random trong danh sách nhập)
 
-- Sau 20h → ưu tiên tag nhe / nong
-- Sau 22h → hạn chế qua_no
+- R2: Không input → random data hệ thống
+  - Sau 20h → ưu tiên tag nhe / nong
+  - Sau 22h → hạn chế qua_no
+  - Ưu tiên type = mua / dat (mua hoặc đặt)
+  - Tránh món nấu phức tạp
+
+- R3: Luôn có câu “giải tỏa trách nhiệm”
+
 
 - Nếu trường **cookingTip** *null* thì hiển thị: 
 
@@ -25,3 +32,4 @@ Món này làm khá đơn giản.
 
 ```
 
+![flow](flow.drawio.png)
