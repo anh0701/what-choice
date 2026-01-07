@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Home from "./pages/Home/Home";
+import Random from "./pages/Random/Random";
+import Cook from "./pages/Cook/Cook";
+import Takeaway from "./pages/Takeaway/Takeaway";
+import Delivery from "./pages/Delivery/Delivery";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [screen, setScreen] = 
+    useState<"home" | "random" | "cook" | "takeaway" | "delivery">("home");
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {
+        screen === "home" && <Home 
+          onRandom={() => setScreen("random")} 
+          onCook={() => setScreen("cook")}
+          onTakeaway={() => setScreen("takeaway")}
+          onDelivery={() => setScreen("delivery")}
+        />}
+
+      {screen === "random" && <Random onBack={() => setScreen("home")} />}
+      {screen === "cook" && <Cook onBack={() => setScreen("home")} />}
+      {screen === "takeaway" && <Takeaway onBack={() => setScreen("home")} />}
+      {screen === "delivery" && <Delivery onBack={() => setScreen("home")} />}
+      
     </>
-  )
+  );
 }
 
-export default App
+export default App;
