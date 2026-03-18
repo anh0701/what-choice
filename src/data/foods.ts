@@ -42,6 +42,26 @@ export const foods: Food[] = [
     cookingTip: null,
     recipeLink: null
   },
+  {
+    id: "mi_tom_trung",
+    name: "Mì tôm trứng",
+    type: "nau",
+    ingredients: ["mi_goi", "trung", "rau"],
+    tags: ["nhanh", "re"],
+    reason: ["cứu đói cấp tốc", "nguyên liệu dễ tìm"],
+    cookingTip: "Thêm một ít hành lá và tiêu để thơm hơn nhé!",
+    recipeLink: null
+  },
+  {
+    id: "dau_hu_sot_ca",
+    name: "Đậu hũ sốt cà chua",
+    type: "nau",
+    ingredients: ["dau_hu", "ca_chua"],
+    tags: ["re", "nhe"],
+    reason: ["ăn thanh đạm", "chi phí cực rẻ"],
+    cookingTip: "Chiên sơ đậu hũ trước khi sốt để không bị nát.",
+    recipeLink: null
+  },
 
   // ====== MUA (mang về) ======
   {
@@ -81,6 +101,26 @@ export const foods: Food[] = [
     tags: ["no", "re"],
     price: "< 30,000đ",
     reason: ["ăn chắc bụng", "tiện"],
+    cookingTip: null,
+    recipeLink: null
+  },
+  {
+    id: "banh_cuon",
+    name: "Bánh cuốn",
+    type: "mua",
+    tags: ["nhe", "nhanh"],
+    price: "25,000đ - 40,000đ",
+    reason: ["ăn sáng hoặc ăn xế đều hợp", "nhẹ bụng"],
+    cookingTip: null,
+    recipeLink: null
+  },
+  {
+    id: "com_tam",
+    name: "Cơm tấm",
+    type: "mua",
+    tags: ["no"],
+    price: "35,000đ - 60,000đ",
+    reason: ["đặc sản vỉa hè", "no lâu"],
     cookingTip: null,
     recipeLink: null
   },
@@ -126,6 +166,37 @@ export const foods: Food[] = [
     cookingTip: null,
     recipeLink: null
   },
+  {
+    id: "ga_ran",
+    name: "Gà rán",
+    type: "dat",
+    tags: ["no", "nong"],
+    price: "50,000đ - 100,000đ",
+    reason: ["thèm đồ dầu mỡ", "stress relief"],
+    cookingTip: null,
+    recipeLink: null
+  },
+  {
+    id: "pizza",
+    name: "Pizza",
+    type: "dat",
+    tags: ["no"],
+    price: "> 100,000đ",
+    reason: ["ăn cùng bạn bè", "đổi vị kiểu Tây"],
+    cookingTip: null,
+    recipeLink: null
+  },
+  {
+    id: "bun_dau_mam_tom",
+    name: "Bún đậu mắm tôm",
+    type: "dat",
+    tags: ["no", "nong"],
+    price: "40,000đ - 70,000đ",
+    reason: ["món gây nghiện", "nhiều topping"],
+    cookingTip: null,
+    recipeLink: null
+  },
+
   // ====== ĂN VẶT / ĂN KHUYA ======
   {
     id: "banh_trang_tron",
@@ -186,11 +257,25 @@ export const foods: Food[] = [
     reason: ["ăn khuya ấm bụng", "dễ ngủ lại"],
     cookingTip: null,
     recipeLink: null
+  },
+  {
+    id: "oc_cac_loai",
+    name: "Ốc các loại",
+    type: "mua",
+    tags: ["nong", "nhe"],
+    price: "50,000đ - 150,000đ",
+    reason: ["lai rai buổi tối", "nhiều hương vị"],
+    cookingTip: null,
+    recipeLink: null
+  },
+  {
+    id: "sup_cua",
+    name: "Súp cua",
+    type: "mua",
+    tags: ["nhe", "nong"],
+    price: "< 30,000đ",
+    reason: ["ấm bụng đêm khuya", "dễ tiêu hóa"],
+    cookingTip: null,
+    recipeLink: null
   }
-];
-
-export const moods = [
-  "đỡ phải nghĩ",
-  "để app chọn cho nhanh",
-  "ăn cho xong bữa"
 ];

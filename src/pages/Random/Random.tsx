@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { foods, moods } from "../../data/foods";
+import { foods} from "../../data/foods";
+import { moodCategories } from "../../data/moods";
 import type { Food, FoodType } from "../../types/food";
 
 import "./Random.css";
+import { getTimeContext } from "../../utils/time";
 
 function pickRandom<T>(list: T[]): T | null {
     if (list.length === 0) return null;
@@ -20,7 +22,7 @@ export default function Random() {
     const [result, setResult] = useState<Food | null>(null);
     const [reason, setReason] = useState<string | null>(null);
     const [mood, setMood] = useState<string | null>(null);
-
+    const [isSpinning, setIsSpinning] = useState(false);
 
     function resetResult() {
         setResult(null);
@@ -56,22 +58,19 @@ export default function Random() {
 
     function handleRandom() {
         let source: Food[] = [];
+        const { isMainMealTime, isLateNight } = getTimeContext();
 
         switch (mode) {
             case "all":
-                // source = foods;
-                const now = new Date();
-                const hours = now.getHours();
-
-                if (
-                    (hours >= 6 && hours <= 8) || 
-                    (hours >= 12 && hours <= 13) ||
-                    (hours >= 18 && hours <= 19)
-                ){
+                if (isMainMealTime) {
                     source = foods.filter(f => f.tags.includes('no'));
-                }else{
+                } else if (isLateNight) {
+                    source = foods.filter(f => f.tags.includes('nong') || f.reason.some(r => r.includes('khuya')));
+                } else {
                     source = foods.filter(f => !f.tags.includes('no'));
                 }
+                if (source.length === 0) source = foods;
+
                 break;
 
             case "filter":
@@ -85,12 +84,45 @@ export default function Random() {
                 break;
         }
 
-        const food = pickRandom(source);
-        if (!food) return;
+        if (source.length === 0) source = foods;
+        startSpinningEffect(source);
+    }
 
-        setResult(food);
-        setReason(pickRandom(food.reason));
-        setMood(pickRandom(moods));
+    function startSpinningEffect(source: Food[]) {
+        setIsSpinning(true);
+        setResult(null); 
+        
+        let count = 0;
+        const maxSpins = 12; 
+        const speed = 100;   
+
+        const interval = setInterval(() => {
+            const randomTemp = source[Math.floor(Math.random() * source.length)];
+            setResult(randomTemp);
+            
+            count++;
+
+            if (count >= maxSpins) {
+                clearInterval(interval);
+                
+                const finalFood = source[Math.floor(Math.random() * source.length)];
+                setResult(finalFood);
+                setReason(pickRandom(finalFood.reason));
+                // setMood(pickRandom(moods));
+                var selectedMood: string;
+                if (finalFood.price?.includes(">") || finalFood.type === "dat") {
+                    selectedMood = pickRandom(moodCategories.luxury) ?? "Đang thèm gì đó sang chảnh đúng không?";
+                } else if (finalFood.tags.includes("re") || finalFood.type === "nau") {
+                    selectedMood = pickRandom(moodCategories.budget) ?? "Tự tay làm hết mới ngon!";
+                } else if (finalFood.tags.includes("nhe")) {
+                    selectedMood = pickRandom(moodCategories.healthy) ?? "Ăn món này cho 'eo thon dáng ngọc' nè.";
+                } else {
+                    selectedMood = pickRandom(moodCategories.default) ?? "Chúc bạn ngon miệng!"; 
+                }
+                setMood(selectedMood);
+                setIsSpinning(false);
+            }
+        }, speed);
     }
 
     const canRandom =
@@ -170,17 +202,21 @@ export default function Random() {
 
             <div className="random-btn">
                 <button
-                    disabled={!canRandom}
+                    disabled={!canRandom || isSpinning}
                     onClick={handleRandom}
+                    className={isSpinning ? "btn-spinning" : ""}
                 >
-                    🎲 Chọn món cho tôi
+                    {isSpinning ? "🔄 Đang chọn..." : "🎲 Chọn món cho tôi"}
                 </button>
             </div>
 
-            {result && (
+            {result && !isSpinning && (
                 <div className="result-box">
+                    <div className="type-badge" data-type={result.type}>
+                        {result.type === 'nau' ? '🍳 Tự nấu' : result.type === 'mua' ? '🛵 Mua về' : '📱 Đặt App'}
+                    </div>
                     <h3>{result.name}</h3>
-                    <p>👉 Vì: {reason}</p>
+                    <p>👉: {reason}</p>
                     <p>💭: {mood}</p>
                     {/* <p>📌 Hình thức: {result.type}</p> */}
                     {result.price && <p>💰 Giá: {result.price}</p>}
