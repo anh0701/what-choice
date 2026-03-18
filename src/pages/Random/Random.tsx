@@ -59,7 +59,19 @@ export default function Random() {
 
         switch (mode) {
             case "all":
-                source = foods;
+                // source = foods;
+                const now = new Date();
+                const hours = now.getHours();
+
+                if (
+                    (hours >= 6 && hours <= 8) || 
+                    (hours >= 12 && hours <= 13) ||
+                    (hours >= 18 && hours <= 19)
+                ){
+                    source = foods.filter(f => f.tags.includes('no'));
+                }else{
+                    source = foods.filter(f => !f.tags.includes('no'));
+                }
                 break;
 
             case "filter":
@@ -169,7 +181,7 @@ export default function Random() {
                 <div className="result-box">
                     <h3>{result.name}</h3>
                     <p>👉 Vì: {reason}</p>
-                    <p>💭 Mood: {mood}</p>
+                    <p>💭: {mood}</p>
                     {/* <p>📌 Hình thức: {result.type}</p> */}
                     {result.price && <p>💰 Giá: {result.price}</p>}
                 </div>
