@@ -1,21 +1,44 @@
-import { useState } from "react";
-import { foods} from "../../data/foods";
+import { useState, type JSX } from "react";
+import { foods } from "../../data/foods";
 import { moodCategories } from "../../data/moods";
 import type { Food, FoodType } from "../../types/food";
+
+import {
+    Utensils,
+    Shuffle,
+    Filter,
+    ListChecks,
+    Loader2,
+    ChefHat,
+    ShoppingBag,
+    Smartphone,
+    DollarSign,
+    Sparkles,
+    MessageCircle
+} from "lucide-react";
 
 import "./Random.css";
 import { getTimeContext } from "../../utils/time";
 
+type Mode = "all" | "filter" | "manual";
+
 function pickRandom<T>(list: T[]): T | null {
-    if (list.length === 0) return null;
+    if (!list.length) return null;
     return list[Math.floor(Math.random() * list.length)];
 }
 
-type Mode = "all" | "filter" | "manual";
+// config mapping → scalable
+const TYPE_CONFIG: Record<
+    FoodType,
+    { label: string; icon: JSX.Element }
+> = {
+    nau: { label: "Tự nấu", icon: <ChefHat size={16} /> },
+    mua: { label: "Mua về", icon: <ShoppingBag size={16} /> },
+    dat: { label: "Đặt App", icon: <Smartphone size={16} /> }
+};
 
 export default function Random() {
     const [mode, setMode] = useState<Mode>("all");
-
     const [selectedType, setSelectedType] = useState<FoodType | "">("");
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -24,122 +47,129 @@ export default function Random() {
     const [mood, setMood] = useState<string | null>(null);
     const [isSpinning, setIsSpinning] = useState(false);
 
-    function resetResult() {
+    const resetResult = () => {
         setResult(null);
         setReason(null);
         setMood(null);
-    }
+    };
 
-    function changeMode(next: Mode) {
+    const changeMode = (next: Mode) => {
         if (next === mode) return;
 
         setMode(next);
         resetResult();
 
-        // reset options không liên quan
-        if (next !== "filter") {
-            setSelectedType("");
-        }
+        if (next !== "filter") setSelectedType("");
+        if (next !== "manual") setSelectedIds([]);
+    };
 
-        if (next !== "manual") {
-            setSelectedIds([]);
-        }
-    }
-
-
-    function toggleFood(id: string) {
+    const toggleFood = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id)
                 ? prev.filter(x => x !== id)
                 : [...prev, id]
         );
-    }
+    };
 
-
-    function handleRandom() {
-        let source: Food[] = [];
+    const getSource = (): Food[] => {
         const { isMainMealTime, isLateNight } = getTimeContext();
 
-        switch (mode) {
-            case "all":
-                if (isMainMealTime) {
-                    source = foods.filter(f => f.tags.includes('no'));
-                } else if (isLateNight) {
-                    source = foods.filter(f => f.tags.includes('nong') || f.reason.some(r => r.includes('khuya')));
-                } else {
-                    source = foods.filter(f => !f.tags.includes('no'));
-                }
-                if (source.length === 0) source = foods;
-
-                break;
-
-            case "filter":
-                source = selectedType
-                    ? foods.filter(f => f.type === selectedType)
-                    : foods;
-                break;
-
-            case "manual":
-                source = foods.filter(f => selectedIds.includes(f.id));
-                break;
+        if (mode === "manual") {
+            return foods.filter(f => selectedIds.includes(f.id));
         }
 
-        if (source.length === 0) source = foods;
-        startSpinningEffect(source);
-    }
+        if (mode === "filter") {
+            return selectedType
+                ? foods.filter(f => f.type === selectedType)
+                : foods;
+        }
 
-    function startSpinningEffect(source: Food[]) {
+        // mode === all
+        if (isMainMealTime) {
+            return foods.filter(f => f.tags.includes("no"));
+        }
+
+        if (isLateNight) {
+            return foods.filter(
+                f =>
+                    f.tags.includes("nong") ||
+                    f.reason.some(r => r.includes("khuya"))
+            );
+        }
+
+        return foods.filter(f => !f.tags.includes("no"));
+    };
+
+    const generateMood = (food: Food): string => {
+
+        if (food.tags.includes("re") || food.type === "nau") {
+            return (
+                pickRandom(moodCategories.budget) ??
+                "Ngon - bổ - rẻ chuẩn bài"
+            );
+        }
+
+        else if (food.tags.includes("nhe")) {
+            return (
+                pickRandom(moodCategories.healthy) ??
+                "Ăn nhẹ cho người nhẹ lòng"
+            );
+        } else if (!food.tags.includes("re") || food.type === "dat") {
+            return (
+                pickRandom(moodCategories.luxury) ??
+                "Hôm nay chơi lớn nha ..."
+            );
+        }
+
+        return pickRandom(moodCategories.default) ?? "Ăn đi rồi tính";
+    };
+
+    const startSpinning = (source: Food[]) => {
         setIsSpinning(true);
-        setResult(null); 
-        
+        setResult(null);
+
         let count = 0;
-        const maxSpins = 12; 
-        const speed = 100;   
+        const maxSpins = 12;
 
         const interval = setInterval(() => {
-            const randomTemp = source[Math.floor(Math.random() * source.length)];
-            setResult(randomTemp);
-            
+            setResult(pickRandom(source));
             count++;
 
             if (count >= maxSpins) {
                 clearInterval(interval);
-                
-                const finalFood = source[Math.floor(Math.random() * source.length)];
-                setResult(finalFood);
-                setReason(pickRandom(finalFood.reason));
-                // setMood(pickRandom(moods));
-                var selectedMood: string;
-                if (finalFood.price?.includes(">") || finalFood.type === "dat") {
-                    selectedMood = pickRandom(moodCategories.luxury) ?? "Đang thèm gì đó sang chảnh đúng không?";
-                } else if (finalFood.tags.includes("re") || finalFood.type === "nau") {
-                    selectedMood = pickRandom(moodCategories.budget) ?? "Tự tay làm hết mới ngon!";
-                } else if (finalFood.tags.includes("nhe")) {
-                    selectedMood = pickRandom(moodCategories.healthy) ?? "Ăn món này cho 'eo thon dáng ngọc' nè.";
-                } else {
-                    selectedMood = pickRandom(moodCategories.default) ?? "Chúc bạn ngon miệng!"; 
-                }
-                setMood(selectedMood);
+
+                const final = pickRandom(source);
+                if (!final) return;
+
+                setResult(final);
+                setReason(pickRandom(final.reason));
+                setMood(generateMood(final));
                 setIsSpinning(false);
             }
-        }, speed);
-    }
+        }, 100);
+    };
+
+    const handleRandom = () => {
+        let source = getSource();
+        if (!source.length) source = foods;
+
+        startSpinning(source);
+    };
 
     const canRandom =
-        mode === "all" ||
-        mode === "filter" ||
-        (mode === "manual" && selectedIds.length >= 2);
-
+        mode !== "manual" || selectedIds.length >= 2;
 
     return (
         <div className="random-container">
-            {/* <button onClick={onBack}>← Quay lại</button> */}
+            <h2 className="title">
+                <Utensils size={20} /> Hôm nay ăn gì?
+            </h2>
 
-            <h2>🍽 Hôm nay ăn gì?</h2>
             <p className="hint">
-                Chọn một cách, rồi để mình quyết định giúp bạn
+                Chọn một cách, rồi để hệ thống quyết định giúp bạn
             </p>
 
+            {/* MODE */}
             <div className="mode-select">
                 <label>
                     <input
@@ -147,7 +177,7 @@ export default function Random() {
                         checked={mode === "all"}
                         onChange={() => changeMode("all")}
                     />
-                    🎲 Random tất cả
+                    <Shuffle size={16} /> Random tất cả
                 </label>
 
                 <label>
@@ -156,7 +186,7 @@ export default function Random() {
                         checked={mode === "filter"}
                         onChange={() => changeMode("filter")}
                     />
-                    🍜 Random theo loại
+                    <Filter size={16} /> Theo loại
                 </label>
 
                 <label>
@@ -165,7 +195,7 @@ export default function Random() {
                         checked={mode === "manual"}
                         onChange={() => changeMode("manual")}
                     />
-                    🤔 So sánh vài món
+                    <ListChecks size={16} /> So sánh
                 </label>
             </div>
 
@@ -177,10 +207,10 @@ export default function Random() {
                             setSelectedType(e.target.value as FoodType)
                         }
                     >
-                        <option value="">-- Tất cả --</option>
-                        <option value="nau">Nấu</option>
-                        <option value="mua">Mua</option>
-                        <option value="dat">Đặt</option>
+                        <option value="">Tất cả</option>
+                        <option value="nau">Tự nấu</option>
+                        <option value="mua">Mua về</option>
+                        <option value="dat">Đặt App</option>
                     </select>
                 </div>
             )}
@@ -206,20 +236,50 @@ export default function Random() {
                     onClick={handleRandom}
                     className={isSpinning ? "btn-spinning" : ""}
                 >
-                    {isSpinning ? "🔄 Đang chọn..." : "🎲 Chọn món cho tôi"}
+                    {isSpinning ? (
+                        <>
+                            <Loader2 className="spin" size={16} /> Đang chọn...
+                        </>
+                    ) : (
+                        <>
+                            <Shuffle size={16} /> Chọn món
+                        </>
+                    )}
                 </button>
             </div>
 
             {result && !isSpinning && (
                 <div className="result-box">
-                    <div className="type-badge" data-type={result.type}>
-                        {result.type === 'nau' ? '🍳 Tự nấu' : result.type === 'mua' ? '🛵 Mua về' : '📱 Đặt App'}
+                    <div
+                        className="type-badge"
+                        data-type={result.type}
+                    >
+                        {TYPE_CONFIG[result.type].icon}
+                        {TYPE_CONFIG[result.type].label}
                     </div>
+
                     <h3>{result.name}</h3>
-                    <p>👉: {reason}</p>
-                    <p>💭: {mood}</p>
-                    {/* <p>📌 Hình thức: {result.type}</p> */}
-                    {result.price && <p>💰 Giá: {result.price}</p>}
+
+                    {reason && (
+                        <p className="reason">
+                            <MessageCircle size={16} />
+                            <span> {reason}</span>
+                        </p>
+                    )}
+
+                    {mood && (
+                        <p className="mood">
+                            <Sparkles size={16} />
+                            <span> {mood}</span>
+                        </p>
+                    )}
+
+                    {result.price && (
+                        <p className="price">
+                            <DollarSign size={16} />
+                            <span> {result.price}</span>
+                        </p>
+                    )}
                 </div>
             )}
         </div>
