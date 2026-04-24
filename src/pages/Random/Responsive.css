@@ -1,0 +1,17 @@
+@media (max-width: 1024px) {
+  .food-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .food-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .random-container h2 {
+    font-size: 24px;
+  }
+}

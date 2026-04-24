@@ -1,8 +1,4 @@
-/* .random-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px 16px 64px;
-} */
+@import url("./Responsive.css");
 
 .random-container h2 {
   font-size: 28px;
@@ -72,34 +68,12 @@ select {
   border: 1px solid #333;
 }
 
-.food-list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px 12px;
-}
-
-.food-list label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.food-list input {
-  margin: 0; 
-}
-
 .random-btn {
-  margin-top: 5% !important;
+  margin-top: 12px !important;
 }
 
 .result-box {
-  margin-top: 32px;
+  margin-top: 12px;
   padding: 20px;
   background: #0f172a;
   border-radius: 16px;
@@ -155,20 +129,47 @@ input[type=radio] {
   gap: 6px;
 }
 
-@media (max-width: 1024px) {
-  .food-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.mode-select label.active {
+    background: rgb(0, 90, 255);
+    border-color: #4f8cff;
+    box-shadow: 0 4px 12px rgba(79, 140, 255, 0.12);
+    font-weight: 600;
 }
 
-@media (max-width: 600px) {
-  .food-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.filter-title, .food-list-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #444;
 }
 
-@media (max-width: 480px) {
-  .random-container h2 {
-    font-size: 24px;
-  }
+.food-list-scroll {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
+
+.food-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.food-list label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  min-height: 44px;
+}
+
+.food-list input {
+  margin: 0;
+  flex-shrink: 0;
+}
+

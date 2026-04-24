@@ -171,7 +171,7 @@ export default function Random() {
 
             {/* MODE */}
             <div className="mode-select">
-                <label>
+                <label className={mode === "all" ? "active" : ""}>
                     <input
                         type="radio"
                         checked={mode === "all"}
@@ -180,7 +180,7 @@ export default function Random() {
                     <Shuffle size={16} /> Random tất cả
                 </label>
 
-                <label>
+                <label className={mode === "filter" ? "active" : ""}>
                     <input
                         type="radio"
                         checked={mode === "filter"}
@@ -189,7 +189,26 @@ export default function Random() {
                     <Filter size={16} /> Theo loại
                 </label>
 
-                <label>
+                {mode === "filter" && (
+                    <div className="option-box">
+                        <p className="filter-title">
+                            Chọn hình thức ăn hôm nay:
+                        </p>
+                        <select
+                            value={selectedType}
+                            onChange={e =>
+                                setSelectedType(e.target.value as FoodType)
+                            }
+                        >
+                            <option value="">Tất cả</option>
+                            <option value="nau">Tự nấu</option>
+                            <option value="mua">Mua về</option>
+                            <option value="dat">Đặt App</option>
+                        </select>
+                    </div>
+                )}
+
+                <label className={mode === "manual" ? "active" : ""}>
                     <input
                         type="radio"
                         checked={mode === "manual"}
@@ -199,34 +218,27 @@ export default function Random() {
                 </label>
             </div>
 
-            {mode === "filter" && (
-                <div className="option-box">
-                    <select
-                        value={selectedType}
-                        onChange={e =>
-                            setSelectedType(e.target.value as FoodType)
-                        }
-                    >
-                        <option value="">Tất cả</option>
-                        <option value="nau">Tự nấu</option>
-                        <option value="mua">Mua về</option>
-                        <option value="dat">Đặt App</option>
-                    </select>
-                </div>
-            )}
 
             {mode === "manual" && (
-                <div className="option-box food-list">
-                    {foods.map(f => (
-                        <label key={f.id}>
-                            <input
-                                type="checkbox"
-                                checked={selectedIds.includes(f.id)}
-                                onChange={() => toggleFood(f.id)}
-                            />
-                            {f.name}
-                        </label>
-                    ))}
+                <div className="option-box">
+                    <p className="food-list-title">
+                        Chọn một vài món để so sánh nào:
+                    </p>
+
+                    <div className="food-list-scroll">
+                        <div className="food-list">
+                            {foods.map(f => (
+                                <label key={f.id}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.includes(f.id)}
+                                        onChange={() => toggleFood(f.id)}
+                                    />
+                                    {f.name}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
 
